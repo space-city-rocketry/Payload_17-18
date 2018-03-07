@@ -2,9 +2,6 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BMP085_U.h>
 
-#include <OneWire.h>
-#include <DallasTemperature.h>
-
 #include "portmap.h"
 #include "data_logger.h"
 #include "mpu6050.h"
@@ -25,12 +22,12 @@ Multiplexer mux(kMUX[0], kMUX[1], kMUX[2], kMUX[3]);
 
 Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
 
-OneWire temp_bus(kOneWireBus);
-DallasTemperature temp_sensors(&temp_bus);
 
 void setup() {
   Serial.begin(115200);
   Wire.begin(); //Join I2C bus as a master device.
+
+  pinMode(kMosfet, OUTPUT);
 
   for (int i = 0; i < 6; i++)
     data.voltages.voltage_flex[i] = 0;
@@ -60,7 +57,7 @@ void loop() {
 
         MPU6050_enable();
 
-        temp_sensors.begin();
+        digitalWrite(kMosfet, HIGH);
 
         logger = new DataLogger(&data, 0, "data.csv");
       }
@@ -90,7 +87,7 @@ void loop() {
 
       //Read, interpret, and log the voltage data from the batteries.
       for (int i = 0; i < 6; i++) {
-        data.voltages.voltage_flex[i] = mux.multiplexerRead(kFlex, kFlexMUX[i]) / 1023.0 * 3.3;
+        data.voltages.voltage_flex[i] = mux.multiplexerRead(kMuxOut, kFlexMUX[i]) / 1023.0 * 3.3;
       }
 
       for (int j = 0; j < 3; j++) {
@@ -107,9 +104,9 @@ void loop() {
       }
 
       //Read and log the temperatures from the DS18B20 temperature sensors
-      temp_sensors.requestTemperatures();
-      for(int i = 0; i < 9; i++)
-        data.temperatures.temperature[i] = temp_sensors.getTempCByIndex(i);
+      for (int i = 0; i < 9; i++){
+        data.temperatures.temperature[i] = mux.multiplexerRead(kMuxOut, kTemp[i]) / 1023.0 * 3.3 * 1000.0 / 10.0 * 2;
+      }
 
       //Write data to SD card and check for shutdown signal.
       logger->writeToSD();
@@ -118,6 +115,7 @@ void loop() {
       if (Serial.read() > -1) {
         state = 100;
         Serial.println("Shutting down...");
+        digitalWrite(kMosfet, LOW);
       }
 
       break;

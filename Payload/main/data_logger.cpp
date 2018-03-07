@@ -38,6 +38,6 @@ void DataLogger::writeToSD(){
     file = SD.open(this->file_name, FILE_WRITE);
     file.println(data->getDataRow());
     file.close();
-  }/*else
-    Serial.println(data->getDataRow());*/
+  }else
+    Serial.println(data->getDataRow());
 }
