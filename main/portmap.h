@@ -4,6 +4,7 @@
 //Digital Ports
 const static uint8_t kMosfet = 4;
 const static uint8_t kMUX[] = {3, 2, 1, 0};
+const static uint8_t kTrigger = 5;
 
 //Analog ports
 const static int kCoin[] = {0, 1, 2};

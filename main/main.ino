@@ -17,7 +17,7 @@ int state = 0;
 long cycle_time = 100;
 long start_time = millis();
 long currentTime = start_time;
-
+      
 Multiplexer mux(kMUX[0], kMUX[1], kMUX[2], kMUX[3]);
 
 Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
@@ -29,6 +29,7 @@ void setup() {
   Wire.begin(); //Join I2C bus as a master device.
 
   pinMode(kMosfet, OUTPUT);
+  pinMode(kTrigger, INPUT);
 
   for (int i = 0; i < 6; i++)
     data.voltages.voltage_flex[i] = 0;
@@ -40,14 +41,12 @@ void setup() {
 void loop() {
 
   start_time = millis();
+  int16_t ax, ay, az;
 
   switch (state) {
 
     case 0:
-      //TODO: Wait for dashboard signal
-      if (Serial.read() > -1) {
-        Serial.println("Starting...");
-        state = 50;
+      if(digitalRead(kTrigger) == HIGH){
 
         Serial.println("Initializing I2C devices...");
         
@@ -55,6 +54,24 @@ void loop() {
     
         accel.initialize();
         Serial.println(accel.testConnection() ? "MPU6050 connection successful!" : "MPU6050 connection failed! Acceleration will not be logged!");
+        
+        state = 10;
+      }      
+    break;
+
+    case 10:
+
+      accel.getAcceleration(&ax, &ay, &az);
+
+      float axf, ayf, azf;
+
+      axf = ax / 16384.0 * 9.81;
+      ayf = ay / 16384.0 * 9.81;
+      azf = az / 16384.0 * 9.81;
+    
+      if (abs(axf) >= 10 || abs(ayf) >= 10 || abs(azf) >= 10) {
+        Serial.println("Starting...");
+        state = 50;
 
         digitalWrite(kMosfet, HIGH);
 
@@ -64,7 +81,6 @@ void loop() {
 
     case 50:
 
-      int16_t ax, ay, az;
 
       accel.getAcceleration(&ax, &ay, &az);
 
