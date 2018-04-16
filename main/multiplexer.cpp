@@ -2,11 +2,11 @@
 #include <Arduino.h>
 
 Multiplexer::Multiplexer(int s0, int s1, int s2, int s3)
-:s0(s0), s1(s1), s2(s2), s3(s3){
-  pinMode(s0, OUTPUT);
-  pinMode(s1, OUTPUT);
-  pinMode(s2, OUTPUT);
-  pinMode(s3, OUTPUT);
+:_s0(s0), _s1(s1), _s2(s2), _s3(s3){
+  pinMode(_s0, OUTPUT);
+  pinMode(_s1, OUTPUT);
+  pinMode(_s2, OUTPUT);
+  pinMode(_s3, OUTPUT);
 }
 
 Multiplexer::~Multiplexer(){
@@ -27,9 +27,9 @@ void Multiplexer::selectAddress(uint8_t address){
   p1 = (address >> 2) & 0x00000001;
   p2 = (address >> 1) & 0x00000001;
   p3 = address & 0x000000001;
-  digitalWrite(s0, p0);
-  digitalWrite(s1, p1);
-  digitalWrite(s2, p2);
-  digitalWrite(s3, p3);
+  digitalWrite(_s0, p0);
+  digitalWrite(_s1, p1);
+  digitalWrite(_s2, p2);
+  digitalWrite(_s3, p3);
 }
 

@@ -12,7 +12,7 @@ public:
 
 private:
   void selectAddress(uint8_t address);
-  int s0,s1,s2,s3;
+  int _s0,_s1,_s2,_s3;
 
 };
 

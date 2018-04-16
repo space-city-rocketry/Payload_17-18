@@ -30,30 +30,30 @@ struct VoltageData : public Data{
 
   String getHeader(){
     String header = "";
-    for(int i = 1; i <= 6; i++){
-      header.concat("Flexible Battery ");
-      header.concat(i);
-      header.concat(" (V)");
-      header.concat(",");
-    }
     for(int j = 1; j <=3; j++){
       header.concat("Coin Cell Battery ");
       header.concat(j);
       header.concat(" (V)");
-      if(j < 3) header.concat(",");
+      header.concat(",");
+    }
+    for(int i = 1; i <= 6; i++){
+      header.concat("Flexible Battery ");
+      header.concat(i);
+      header.concat(" (V)");
+      if(i < 6) header.concat(",");
     }
     return header;
   }
   
   String getDataRow(){
     String data_row = "";
-    for(int i = 0; i < 6; i++){
-      data_row.concat(voltage_flex[i]);
-      data_row.concat(",");
-    }
     for(int j = 0; j < 3; j++){
       data_row.concat(voltage_coin[j]);
-      if(j < 2) data_row.concat(",");
+      data_row.concat(",");
+    }
+    for(int i = 0; i < 6; i++){
+      data_row.concat(voltage_flex[i]);
+      if(i < 2) data_row.concat(",");
     }
     return data_row;
   } 

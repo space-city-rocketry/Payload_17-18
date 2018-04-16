@@ -14,10 +14,10 @@ public:
   void writeToSD(); 
 
 private:
-  Data* data;
-  File file;
-  String file_name;
-  bool sd_init;
+  Data* _data;
+  File _file;
+  String _file_name;
+  bool _sd_init;
 };
 
 #endif //DATA_LOGGER_H
