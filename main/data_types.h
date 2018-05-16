@@ -53,7 +53,7 @@ struct VoltageData : public Data{
     }
     for(int i = 0; i < 6; i++){
       data_row.concat(voltage_flex[i]);
-      if(i < 2) data_row.concat(",");
+      if(i < 5) data_row.concat(",");
     }
     return data_row;
   } 

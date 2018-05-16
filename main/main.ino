@@ -81,7 +81,7 @@ void loop() {
 
       if (abs(axf) >= 2 || abs(ayf) >= 2 || abs(azf) >= 2 || Serial.read() > -1) {
         Serial.println("Starting...");
-        //battery_watch.start();
+        battery_watch.start();
         logger = new DataLogger(&data, 0, "data.csv");
         state = 50;
       }
@@ -89,7 +89,6 @@ void loop() {
 
     case 50:
 
-      //battery_watch.update();
 
       accel.getAcceleration(&ax, &ay, &az);
 
@@ -100,11 +99,15 @@ void loop() {
       //Read, interpret, and log the voltage data from the batteries.
       for (int i = 0; i < 6; i++) {
         data.voltages.voltage_flex[i] = 3.011 * (3.3 * (mux.multiplexerRead(kMuxSig, kFlexMUX[i]) / 1023.0)) - 0.1449 - 0.015;
+        if(data.voltages.voltage_flex[i] <= 0) data.voltages.voltage_flex[i] = 0;
       }
 
       for (int j = 0; j < 3; j++) {
         data.voltages.voltage_coin[j] =  3.011 * (3.3 * (analogRead(kCoin[j]) / 1023.0)) - 0.1449 - 0.015;
+        if(data.voltages.voltage_coin[j] <= 0) data.voltages.voltage_coin[j] = 0;
       }
+      
+      battery_watch.update();
 
       //Read and log the pressure and altitude from the BMP180
       sensors_event_t event;
